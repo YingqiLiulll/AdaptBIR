@@ -1,0 +1,107 @@
+model:
+  base_learning_rate: 4.5e-6
+  target: ldm.models.autoencoder_freeze.AutoencoderKL
+  params:
+    embed_dim: 4
+    ckpt_path: vae/models/first_stage_models/kl-f8/model.ckpt
+    lossconfig:
+      target: ldm.modules.losses.l2loss.L2Loss
+    ddconfig:
+      double_z: True
+      z_channels: 4
+      resolution: 512
+      in_channels: 3
+      out_ch: 3
+      ch: 128
+      ch_mult: [ 1,2,4,4 ]  # num_down = len(ch_mult)-1
+      num_res_blocks: 2
+      attn_resolutions: [ ]
+      dropout: 0.0
+
+data:
+  target: main.DataModuleFromConfig
+  params:
+    batch_size: 5
+    wrap: True
+    train:
+      target: ldm.data.realesrgan_dataset.RealESRGANDataset
+      params:
+        opt:
+          # Path to file list of training set.
+          meta_info: # Path to training set info.
+          use_crop: true
+          crop_type: center_crop
+          queue_size: 180
+          scale: 1
+          
+          use_hflip: False
+          use_rot: False
+          out_size: 512
+
+          #for model
+          resize_prob: [0.2, 0.7, 0.1]  # up, down, keep
+          resize_range: [0.15, 1.5]
+          gaussian_noise_prob: 0.5
+          noise_range: [1, 30]
+          poisson_scale_range: [0.05, 3]
+          gray_noise_prob: 0.4
+          jpeg_range: [30, 95]
+
+          # the second degradation process
+          second_blur_prob: 0.8
+          resize_prob2: [0.3, 0.4, 0.3]  # up, down, keep
+          resize_range2: [0.3, 1.2]
+          gaussian_noise_prob2: 0.5
+          noise_range2: [1, 25]
+          poisson_scale_range2: [0.05, 2.5]
+          gray_noise_prob2: 0.4
+          jpeg_range2: [30, 95]
+
+          blur_kernel_size: 21
+          kernel_list: ['iso', 'aniso', 'generalized_iso', 'generalized_aniso', 'plateau_iso', 'plateau_aniso']
+          kernel_prob: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
+          sinc_prob: 0.1
+          blur_sigma: [0.2, 3]
+          betag_range: [0.5, 4]
+          betap_range: [1, 2]
+
+          blur_kernel_size2: 21
+          kernel_list2: ['iso', 'aniso', 'generalized_iso', 'generalized_aniso', 'plateau_iso', 'plateau_aniso']
+          kernel_prob2: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
+          sinc_prob2: 0.1
+          blur_sigma2: [0.2, 1.5]
+          betag_range2: [0.5, 4]
+          betap_range2: [1, 2]
+
+          final_sinc_prob: 0.8
+
+    validation:
+      target: ldm.data.base_datasets.BaseDataFolder
+      params:
+        dir_path: # Path to file list of validation LQ images.
+        dir_path_gt: # Path to file list of validation GT images.
+        ext: png
+        need_gt_path: False
+        length: ~
+        mean: 0.0
+        std: 1.0
+
+lightning:
+  callbacks:
+    image_logger:
+      target: main.ImageLogger
+      params:
+        batch_frequency: 1000
+        max_images: 4
+        increase_log_steps: True
+
+    metrics_over_trainsteps_checkpoint:
+        target: pytorch_lightning.callbacks.ModelCheckpoint
+        params:
+          every_n_train_steps: 2000
+          save_weights_only: False
+
+  trainer:
+    val_check_interval: 1000
+    benchmark: True
+    accumulate_grad_batches: 2

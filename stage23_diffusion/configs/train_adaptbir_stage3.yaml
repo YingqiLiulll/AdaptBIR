@@ -1,0 +1,51 @@
+# Path to your experiment directory.
+expdir: diffusion/expdir_stage3
+
+model:
+  # Path to your model config.
+  config: diffusion/configs/model_stage3.yaml
+  auto_resume: True
+  resume: diffusion/expdir_stage2/last.ckpt"
+
+train:
+  # Indices of gpus used for training.
+  gpus: [0,1,2,3]
+  seed: 231
+  batch_size: 27
+  # Log images every [logger_freq] steps.
+  logger_freq: 300
+  prefetch_factor: 2
+  learning_rate: 1e-5
+  sd_locked: True
+  only_mid_control: False
+  # Save weight every [save_every_n_steps] steps.
+  save_every_n_steps: 500
+  max_steps: 70001 # 70k
+
+data:
+  target: cldm.dataset.mild_codeformer_dataset.DegradationDataset
+  params:
+    opt:
+      # Path to file list of training set.
+      meta_info: # Path to training set info.
+      use_crop: true
+      
+      use_hflip: False
+      out_size: 512
+
+      blur_probability: 0.5
+      blur_kernel_size: [3,13,2]
+      kernel_list: ['iso', 'aniso']
+      kernel_prob: [0.5, 0.5]
+      blur_sigma: [0.1, 5] 
+      downsample_range: [0.8, 4]
+      noise_range: [0, 25]
+      jpeg_range: [60, 100]
+
+  num_workers: 4
+
+lightning:
+  trainer:
+    benchmark: True
+    max_steps: 800000
+    accumulate_grad_batches: 2
