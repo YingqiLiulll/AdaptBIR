@@ -311,7 +311,7 @@ def main():
                 guess_mode=False, strength=1, scale=1,
                 color_fix_type=args.color_fix_type,
                 disable_preprocess_model=args.disable_preprocess_model,
-                cond_fn=None, delta=k, csft_w=csft_w
+                delta=k, csft_w=csft_w
             )
             control_img = ((control_imgs[0]/2.0 +0.5) * 255).clip(0, 255).astype(np.uint8)
             ddpm_pred = ddpm_preds[0]

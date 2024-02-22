@@ -11,17 +11,16 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-# f = os.listdir('F:/classical_SR_datasets/OST_dataset/OutdoorSceneTest300/OutdoorSceneTest300')
-# f = os.listdir('F:/data_val_degra/B100/LR_degra/bicubic_noise20')
 scale = 4
 auto_mode_size=512
 
+# This is a script for directly processing color fix.
 
 color_fix_type = 'wavelet'
 
-sr_path = '/data/Projects/DiffBIR_private-main/stage2/results/SR_testsets_IQA/slight_v3/cfg4_iqa_new/slight_v3/'
-gt_path = '/data/Datasets/SR_testsets/'
-output_path = '/data/Projects/DiffBIR_private-main/stage2/results/SR_testsets_IQA/slight_v3/cfg4_iqa_new_color_fix'
+sr_path = "path to Images waiting to be processed"
+gt_path = 'path to GT'
+output_path = 'path to output'
 f = os.listdir(gt_path)
 for i in f:
     print("picture:",i)
