@@ -184,14 +184,6 @@ def main():
     parser.add_argument("--auto_mode_size", type=int, default=512)
     parser.add_argument("--auto_mode_scale", type=float, default=4)
     parser.add_argument("--repeat_times", type=int, default=1)
-    
-     # latent image guidance
-    parser.add_argument("--use_guidance", action="store_true")
-    parser.add_argument("--g_scale", type=float, default=0.0)
-    parser.add_argument("--g_t_start", type=int, default=1001)
-    parser.add_argument("--g_t_stop", type=int, default=-1)
-    parser.add_argument("--g_space", type=str, default="latent")
-    parser.add_argument("--g_repeat", type=int, default=5)
 
     parser.add_argument("--disable_preprocess_model", action="store_true")
     parser.add_argument("--color_fix_type", type=str, default="none", choices=["wavelet", "adain", "none"])
